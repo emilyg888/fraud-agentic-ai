@@ -13,6 +13,7 @@ class Settings:
     knowledge_dir: Path
     reports_dir: Path
     runs_dir: Path
+    checkpoint_db_path: Path
     registry_dir: Path
     llm_provider: str
     model_name: str
@@ -21,13 +22,15 @@ class Settings:
 
 def get_settings() -> Settings:
     root_dir = Path(os.getenv("AIRLAB_ROOT_DIR", Path(__file__).resolve().parents[2]))
+    runs_dir = Path(os.getenv("AIRLAB_RUNS_DIR", root_dir / "runs"))
     return Settings(
         root_dir=root_dir,
         data_dir=Path(os.getenv("AIRLAB_DATA_DIR", root_dir / "data")),
         docs_dir=Path(os.getenv("AIRLAB_DOCS_DIR", root_dir / "docs")),
         knowledge_dir=Path(os.getenv("AIRLAB_KNOWLEDGE_DIR", root_dir / "knowledge")),
         reports_dir=Path(os.getenv("AIRLAB_REPORTS_DIR", root_dir / "reports")),
-        runs_dir=Path(os.getenv("AIRLAB_RUNS_DIR", root_dir / "runs")),
+        runs_dir=runs_dir,
+        checkpoint_db_path=Path(os.getenv("AIRLAB_CHECKPOINT_DB_PATH", runs_dir / "langgraph_checkpoints.sqlite")),
         registry_dir=Path(os.getenv("AIRLAB_REGISTRY_DIR", root_dir / "signal_registry")),
         llm_provider=os.getenv("LOCAL_LLM_PROVIDER", "ollama"),
         model_name=os.getenv("MODEL_NAME", "qwen3.6:35b-a3b"),

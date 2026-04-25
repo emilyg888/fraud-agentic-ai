@@ -2,12 +2,11 @@ from __future__ import annotations
 
 import json
 
-from airlab_fraud_agentic_ai.agents.case_report_writer import render_case_report
 from airlab_fraud_agentic_ai.config import get_settings
 from airlab_fraud_agentic_ai.dashboard.view_models import build_case_overview, build_run_summary
 from airlab_fraud_agentic_ai.data.bb_adapter import BBDatasetAdapter
 from airlab_fraud_agentic_ai.evaluation.regression_tests import run_registry_regression_suite
-from airlab_fraud_agentic_ai.graph.persistence import load_run_state, save_run_state
+from airlab_fraud_agentic_ai.graph.persistence import load_run_trace
 from airlab_fraud_agentic_ai.graph.workflow import FraudInvestigationWorkflow
 from airlab_fraud_agentic_ai.tools.alert_tools import get_alert
 from airlab_fraud_agentic_ai.tools.registry_tools import (
@@ -35,11 +34,12 @@ def run_investigation(case_id: str, llm_provider: str = "fake", require_human_re
 
 
 def get_run_state(run_id: str) -> dict:
-    return load_run_state(run_id)
+    workflow = FraudInvestigationWorkflow()
+    return workflow.get_state(run_id)
 
 
 def ask_case_question(run_id: str, question: str) -> dict:
-    state = load_run_state(run_id)
+    state = get_run_state(run_id)
     lowered = question.lower()
     evidence_refs = [item["path"] for item in state.get("retrieved_typologies", []) + state.get("retrieved_policies", [])]
 
@@ -80,21 +80,12 @@ def submit_signal_decision(run_id: str, signal_id: str, decision: str, reviewer:
 
 
 def get_report(run_id: str) -> str:
-    state = load_run_state(run_id)
-    report = state.get("final_case_report", "")
-    if report:
-        if not state.get("report_path") or not state.get("run_trace_path"):
-            save_run_state(run_id, state)
-        return report
-
-    backfilled_report = render_case_report(state)
-    state["final_case_report"] = backfilled_report
-    save_run_state(run_id, state)
-    return backfilled_report
+    state = get_run_state(run_id)
+    return state.get("final_case_report", "")
 
 
 def get_audit_trace(run_id: str) -> dict:
-    state = load_run_state(run_id)
+    state = get_run_state(run_id)
     return {"run_id": run_id, "audit_log": state.get("audit_log", [])}
 
 
@@ -111,7 +102,11 @@ def list_signal_registry(status: str | None = None) -> list[dict]:
 
 
 def export_run_trace(run_id: str) -> str:
-    return json.dumps(load_run_state(run_id), indent=2)
+    try:
+        state = get_run_state(run_id)
+    except FileNotFoundError:
+        state = load_run_trace(run_id)
+    return json.dumps(state, indent=2)
 
 
 def get_signal_regression_summary() -> dict:

@@ -7,6 +7,9 @@ class FraudInvestigationState(TypedDict, total=False):
     run_id: str
     case_id: str
     analyst_request: str
+    llm_provider: str
+    model_name: str
+    require_human_review: bool
     alert: dict[str, Any]
     case_type: str
     risk_level: str
@@ -29,6 +32,9 @@ class FraudInvestigationState(TypedDict, total=False):
     governance_findings: dict[str, Any]
     human_review_status: str
     human_review_comments: str | None
+    human_review_request: dict[str, Any]
     promoted_signals: list[dict[str, Any]]
     final_case_report: str
+    report_path: str
+    run_trace_path: str
     audit_log: list[dict[str, Any]]

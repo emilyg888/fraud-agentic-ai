@@ -132,9 +132,10 @@ The dashboard is a thin analyst workspace over the service layer. Use it to:
 
 ## LangChain / LangGraph Design
 
-The repo follows the LangGraph-style pattern of explicit state, node sequencing, pause
-points, and durable artifacts. Even where the implementation is lightweight and local,
-the architecture is designed to map to enterprise orchestration patterns cleanly.
+The repo now uses the real LangGraph Graph API with explicit state, node sequencing,
+interrupt-based human review, checkpoint persistence, and durable artifacts. The
+implementation is still lightweight and local, but the orchestration model now maps
+directly to enterprise LangGraph patterns.
 
 See:
 

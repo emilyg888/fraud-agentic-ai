@@ -9,6 +9,8 @@ __pycache__/
 reports/*.md
 reports/*.json
 runs/*.json
+runs/*.sqlite
+runs/*.sqlite-*
 data/vector_store/
 benchmark_plots/
 results_*.csv
