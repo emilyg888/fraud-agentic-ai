@@ -1,0 +1,132 @@
+- run_id: 9ce2d4f1fcf5
+  case_id: A-1001
+  status: approved
+  reviewer: system_auto
+  comments: Auto-approved for local demo.
+  signal:
+    signal_id: A-1001-SIG-1
+    signal_name: new_device_high_value_new_payee_velocity
+    description: New device activity followed by high-value transfers to new payees.
+    source_features:
+    - device_change_count_24h
+    - new_payee_count_24h
+    - transaction_amount_zscore_24h
+    hypothesis: May indicate account takeover or scam-induced payment.
+    expected_direction: higher values increase risk
+    case_type: account_takeover
+  evaluation:
+    signal_name: new_device_high_value_new_payee_velocity
+    coverage_rate: 0.67
+    fraud_lift: 2.5
+    confirmed_fraud_rate: 0.75
+    false_positive_risk: low
+    data_quality_status: pass
+    explainability_score: 4
+    recommendation: candidate_for_human_review
+  governance:
+    governance_status: pass
+    lineage_status: pass
+    data_quality_status: pass
+    privacy_status: pass
+    explainability_status: pass
+    approval_required: true
+    comments: []
+- run_id: d8f90796a61b
+  case_id: A-1001
+  status: approved
+  reviewer: system_auto
+  comments: Auto-approved for local demo.
+  signal:
+    signal_id: A-1001-SIG-1
+    signal_name: new_device_high_value_new_payee_velocity
+    description: New device activity followed by high-value transfers to new payees.
+    source_features:
+    - device_change_count_24h
+    - new_payee_count_24h
+    - transaction_amount_zscore_24h
+    hypothesis: May indicate account takeover or scam-induced payment.
+    expected_direction: higher values increase risk
+    case_type: account_takeover
+  evaluation:
+    signal_name: new_device_high_value_new_payee_velocity
+    coverage_rate: 0.67
+    fraud_lift: 2.5
+    confirmed_fraud_rate: 0.75
+    false_positive_risk: low
+    data_quality_status: pass
+    explainability_score: 4
+    recommendation: candidate_for_human_review
+  governance:
+    governance_status: pass
+    lineage_status: pass
+    data_quality_status: pass
+    privacy_status: pass
+    explainability_status: pass
+    approval_required: true
+    comments: []
+- run_id: 8acb1016af5a
+  case_id: A-1001
+  status: approved
+  reviewer: fraud_analyst_demo
+  comments: Approved after review.
+  signal:
+    signal_id: A-1001-SIG-1
+    signal_name: new_device_high_value_new_payee_velocity
+    description: New device activity followed by high-value transfers to new payees.
+    source_features:
+    - device_change_count_24h
+    - new_payee_count_24h
+    - transaction_amount_zscore_24h
+    hypothesis: May indicate account takeover or scam-induced payment.
+    expected_direction: higher values increase risk
+    case_type: account_takeover
+  evaluation:
+    signal_name: new_device_high_value_new_payee_velocity
+    coverage_rate: 0.67
+    fraud_lift: 2.5
+    confirmed_fraud_rate: 0.75
+    false_positive_risk: low
+    data_quality_status: pass
+    explainability_score: 4
+    recommendation: candidate_for_human_review
+  governance:
+    governance_status: pass
+    lineage_status: pass
+    data_quality_status: pass
+    privacy_status: pass
+    explainability_status: pass
+    approval_required: true
+    comments: []
+- run_id: 8cfd748d4f03
+  case_id: A-1001
+  status: approved
+  reviewer: fraud_analyst_demo
+  comments: ''
+  signal:
+    signal_id: A-1001-SIG-1
+    signal_name: new_device_high_value_new_payee_velocity
+    description: New device activity followed by high-value transfers to new payees.
+    source_features:
+    - device_change_count_24h
+    - new_payee_count_24h
+    - transaction_amount_zscore_24h
+    hypothesis: May indicate account takeover or scam-induced payment.
+    expected_direction: higher values increase risk
+    case_type: account_takeover
+  evaluation:
+    signal_name: new_device_high_value_new_payee_velocity
+    coverage_rate: 0.67
+    fraud_lift: 2.5
+    confirmed_fraud_rate: 0.75
+    false_positive_risk: low
+    data_quality_status: pass
+    explainability_score: 4
+    recommendation: candidate_for_human_review
+  governance:
+    governance_status: pass
+    lineage_status: pass
+    data_quality_status: pass
+    privacy_status: pass
+    explainability_status: pass
+    approval_required: true
+    comments: []

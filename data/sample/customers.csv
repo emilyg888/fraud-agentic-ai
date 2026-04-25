@@ -1,0 +1,4 @@
+customer_id,age_band,tenure,segment,geography,risk_rating
+C-1001,25-34,2,digital_only,Sydney,medium
+C-1002,35-44,8,retail,Melbourne,low
+C-1003,18-24,1,online_only,Brisbane,high

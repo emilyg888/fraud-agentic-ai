@@ -1,0 +1,7 @@
+transaction_id,customer_id,timestamp,amount,merchant,channel,device_id,payee_id,location,is_new_payee
+T-10001,C-1001,2026-04-24T07:10:00Z,4800,electronics,app,D-NEW-01,P-NEW-77,Sydney,true
+T-10002,C-1001,2026-04-24T07:25:00Z,5200,transfer,app,D-NEW-01,P-NEW-77,Sydney,true
+T-10003,C-1001,2026-04-24T08:10:00Z,3100,transfer,web,D-NEW-01,P-NEW-88,Singapore,true
+T-10004,C-1002,2026-04-23T10:00:00Z,220,grocery,card,D-STD-11,P-OLD-02,Melbourne,false
+T-10005,C-1002,2026-04-23T10:20:00Z,260,transfer,app,D-STD-11,P-NEW-09,Melbourne,true
+T-10006,C-1003,2026-04-22T06:00:00Z,1500,crypto_exchange,web,D-UNK-55,P-NEW-31,Brisbane,true

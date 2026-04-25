@@ -1,0 +1,7 @@
+case_id,case_type,confirmed_fraud_flag,investigation_outcome,loss_amount,signal_name
+HC-1001,account_takeover,true,escalated,12000,new_device_high_value_new_payee_velocity
+HC-1002,account_takeover,true,escalated,8600,new_device_high_value_new_payee_velocity
+HC-1003,scam_payment,true,escalated,4300,new_device_high_value_new_payee_velocity
+HC-1004,scam_payment,false,closed,0,payee_concentration_spike
+HC-1005,synthetic_identity,true,escalated,6100,synthetic_identity_stale_feature_conflict
+HC-1006,account_takeover,false,monitored,0,new_device_high_value_new_payee_velocity

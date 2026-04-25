@@ -1,0 +1,5 @@
+event_id,customer_id,login_time,device_id,device_changed,failed_login_count,channel,session_duration,geolocation_anomaly
+E-1001,C-1001,2026-04-24T06:55:00Z,D-NEW-01,true,4,app,180,true
+E-1002,C-1001,2026-04-24T07:05:00Z,D-NEW-01,true,2,web,95,true
+E-1003,C-1002,2026-04-23T09:50:00Z,D-STD-11,false,0,app,640,false
+E-1004,C-1003,2026-04-22T05:40:00Z,D-UNK-55,true,1,web,120,false

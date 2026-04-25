@@ -1,0 +1,35 @@
+- run_id: 03f08e5faa91
+  case_id: A-1003
+  status: rejected
+  reviewer: fraud_analyst_demo
+  comments: ''
+  signal:
+    signal_id: A-1003-SIG-2
+    signal_name: synthetic_identity_stale_feature_conflict
+    description: Synthetic identity score is elevated while supporting features have
+      freshness concerns.
+    source_features:
+    - stale_feature_flag
+    - synthetic_identity_score
+    hypothesis: May indicate weak identity integrity or unusable supporting features.
+    expected_direction: higher values increase review priority
+    case_type: synthetic_identity
+  evaluation:
+    signal_name: synthetic_identity_stale_feature_conflict
+    coverage_rate: 0.17
+    fraud_lift: 3.0
+    confirmed_fraud_rate: 1.0
+    false_positive_risk: low
+    data_quality_status: pass
+    explainability_score: 4
+    recommendation: candidate_for_human_review
+  governance:
+    governance_status: conditional_pass
+    lineage_status: conditional_pass
+    data_quality_status: pass
+    privacy_status: conditional_pass
+    explainability_status: pass
+    approval_required: true
+    comments:
+    - synthetic_identity_score has certification status review_required
+    - Restricted source feature requires reviewer attention.

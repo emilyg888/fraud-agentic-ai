@@ -1,0 +1,8 @@
+dataset_name,freshness_hours,null_rate,anomaly_count,status
+alerts,2,0.00,0,pass
+customers,4,0.00,0,pass
+accounts,6,0.00,0,pass
+transactions,2,0.01,0,pass
+behavioural_events,2,0.02,0,pass
+features,49,0.03,1,conditional_pass
+historical_cases,24,0.00,0,pass

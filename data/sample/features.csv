@@ -1,0 +1,8 @@
+feature_record_id,alert_id,feature_name,feature_value,window,source_table,calculation_logic
+F-1001,A-1001,device_change_count_24h,2,24h,behavioural_events,count distinct devices in 24h
+F-1002,A-1001,new_payee_count_24h,2,24h,transactions,count new payees in 24h
+F-1003,A-1001,transaction_amount_zscore_24h,3.9,24h,transactions,amount z-score in 24h
+F-1004,A-1002,payee_concentration_7d,0.45,7d,transactions,share of value to top payee
+F-1005,A-1002,velocity_24h,1.2,24h,transactions,transactions per active hour
+F-1006,A-1003,synthetic_identity_score,0.81,30d,features,identity consistency ensemble
+F-1007,A-1003,stale_feature_flag,1,30d,data_quality,flag when feature freshness exceeds policy

@@ -1,0 +1,4 @@
+account_id,customer_id,product_type,open_date,status
+ACC-1001,C-1001,transaction,2024-01-10,active
+ACC-1002,C-1002,transaction,2018-03-14,active
+ACC-1003,C-1003,savings,2025-08-20,active

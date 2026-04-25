@@ -1,0 +1,8 @@
+field_name,source_system,owner,sensitivity,certification_status
+device_change_count_24h,behavioural_events,fraud_analytics,internal,certified
+new_payee_count_24h,transactions,fraud_analytics,internal,certified
+transaction_amount_zscore_24h,transactions,fraud_analytics,internal,certified
+payee_concentration_7d,transactions,fraud_analytics,internal,certified
+velocity_24h,transactions,fraud_analytics,internal,certified
+synthetic_identity_score,feature_store,identity_risk,restricted,review_required
+stale_feature_flag,data_quality,data_governance,internal,certified

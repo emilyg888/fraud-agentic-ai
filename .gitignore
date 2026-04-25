@@ -1,4 +1,16 @@
 .venv/
 __pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
 .DS_Store
 .env
+*.egg-info/
+reports/*.md
+reports/*.json
+runs/*.json
+data/vector_store/
+benchmark_plots/
+results_*.csv
+user_tests/*.json
+user_tests/[0-9a-f]*.md

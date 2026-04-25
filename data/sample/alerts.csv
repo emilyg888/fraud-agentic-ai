@@ -1,0 +1,4 @@
+alert_id,customer_id,model_score,threshold,triggered_features,alert_time,status,analyst_request
+A-1001,C-1001,0.91,0.75,"device_change_count_24h|new_payee_count_24h|transaction_amount_zscore_24h",2026-04-24T09:00:00Z,open,"Investigate alert A-1001. Explain why the case was flagged, compare it to known fraud typologies, check behavioural and transaction signals, and recommend next steps."
+A-1002,C-1002,0.67,0.70,"payee_concentration_7d|velocity_24h",2026-04-23T11:15:00Z,open,"Investigate alert A-1002 and determine whether the case should be monitored or closed."
+A-1003,C-1003,0.82,0.74,"stale_feature_flag|synthetic_identity_score",2026-04-22T07:45:00Z,open,"Investigate alert A-1003 with special attention to data governance constraints."

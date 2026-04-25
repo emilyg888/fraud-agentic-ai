@@ -1,0 +1,27 @@
+alerts:
+  path: data/sample/alerts.csv
+  id_column: alert_id
+customers:
+  path: data/sample/customers.csv
+  id_column: customer_id
+accounts:
+  path: data/sample/accounts.csv
+  id_column: account_id
+transactions:
+  path: data/sample/transactions.csv
+  id_column: transaction_id
+behavioural_events:
+  path: data/sample/behavioural_events.csv
+  id_column: event_id
+features:
+  path: data/sample/features.csv
+  id_column: feature_record_id
+historical_cases:
+  path: data/sample/historical_cases.csv
+  id_column: case_id
+data_quality:
+  path: data/sample/data_quality.csv
+  id_column: dataset_name
+lineage:
+  path: data/sample/lineage.csv
+  id_column: field_name
