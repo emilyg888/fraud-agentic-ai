@@ -32,12 +32,17 @@ def query(alert: dict) -> dict:
     return query_case_data(alert)
 
 
-def summarise(alert: dict, retrieved: dict, case_data: dict) -> str:
-    return summarise_evidence(alert=alert, retrieved=retrieved, case_data=case_data)
+def summarise(alert: dict, retrieved: dict, case_data: dict, llm_backend: str = "fake") -> str:
+    return summarise_evidence(alert=alert, retrieved=retrieved, case_data=case_data, llm_backend=llm_backend)
 
 
-def hypothesise(alert: dict, classification: dict, case_data: dict) -> list[dict]:
-    return generate_signal_hypotheses(alert=alert, case_type=classification["case_type"], case_data=case_data)
+def hypothesise(alert: dict, classification: dict, case_data: dict, llm_backend: str = "fake") -> list[dict]:
+    return generate_signal_hypotheses(
+        alert=alert,
+        case_type=classification["case_type"],
+        case_data=case_data,
+        llm_backend=llm_backend,
+    )
 
 
 def evaluate(signal_candidates: list[dict]) -> list[dict]:

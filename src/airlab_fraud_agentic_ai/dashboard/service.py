@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 
+from airlab_fraud_agentic_ai.agents.llm_factory import get_llm
 from airlab_fraud_agentic_ai.config import get_settings
 from airlab_fraud_agentic_ai.dashboard.view_models import build_case_overview, build_run_summary
 from airlab_fraud_agentic_ai.data.bb_adapter import BBDatasetAdapter
@@ -26,10 +27,15 @@ def get_case_overview(case_id: str) -> dict:
     return build_case_overview(alert)
 
 
-def run_investigation(case_id: str, llm_provider: str = "fake", require_human_review: bool = True) -> dict:
-    selected_provider = llm_provider or get_settings().llm_provider
+def run_investigation(
+    case_id: str,
+    llm_backend: str | None = None,
+    require_human_review: bool = True,
+    llm_provider: str | None = None,
+) -> dict:
+    selected_backend = llm_provider or llm_backend or get_settings().llm_backend
     workflow = FraudInvestigationWorkflow()
-    state = workflow.run_case(case_id=case_id, llm_provider=selected_provider, require_human_review=require_human_review)
+    state = workflow.run_case(case_id=case_id, llm_backend=selected_backend, require_human_review=require_human_review)
     return build_run_summary(state)
 
 
@@ -58,6 +64,37 @@ def ask_case_question(run_id: str, question: str) -> dict:
             "Bounded copilot answer: use current evidence summary, signal evaluation, and governance findings. "
             f"Current recommendation is {state.get('human_review_status', 'pending')}."
         )
+
+    if state.get("llm_backend", state.get("llm_provider")) == "ollama":
+        prompt = f"""
+Answer the analyst question using only the current case JSON. Do not use outside facts.
+Do not make a final fraud decision or approve/reject a signal. Cite the available
+evidence references by path when relevant, mention governance caveats, and state
+limitations if the current evidence does not answer the question.
+
+Question:
+{question}
+
+Deterministic baseline answer:
+{answer}
+
+Current case JSON:
+{json.dumps({
+    "case_id": state.get("case_id"),
+    "case_type": state.get("case_type"),
+    "risk_level": state.get("risk_level"),
+    "alert": state.get("alert"),
+    "evidence_summary": state.get("evidence_summary"),
+    "retrieved_typologies": state.get("retrieved_typologies", []),
+    "retrieved_policies": state.get("retrieved_policies", []),
+    "retrieved_data_definitions": state.get("retrieved_data_definitions", []),
+    "signal_candidates": state.get("signal_candidates", []),
+    "signal_evaluations": state.get("signal_evaluations", []),
+    "governance_findings": state.get("governance_findings", {}),
+    "human_review_status": state.get("human_review_status"),
+}, indent=2)}
+""".strip()
+        answer = get_llm(backend="ollama").invoke(prompt).strip()
 
     return {
         "question": question,

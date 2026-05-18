@@ -7,132 +7,45 @@ class: invert
 
 # Architecture Overview
 
-Air-lab Fraud Agentic AI is structured to look like an enterprise analyst-assist
-platform rather than a single chatbot. The architecture separates presentation,
-orchestration, deterministic controls, and governed outputs.
+Air-lab Fraud Agentic AI is designed as an enterprise-style analyst-assist system, not
+as a single chatbot. The key architectural rule is strict separation between:
+
+- presentation
+- service orchestration
+- workflow state/control
+- reasoning
+- deterministic controls
+- governed artifacts
+
+---
 
 ## Core Separation
-----
+
 ```text
-Business Analyst UI
-        |
-        v
-streamlit_app/
-        |
-        v
-dashboard.service
-        |
-        v
-workflow / graph
-        |
-        +-- retrieval tools
-        +-- approved data tools
-        +-- signal evaluation
-        +-- governance checks
-        +-- report writer
-        +-- signal registry
+Business Analyst / Reviewer
+            |
+            v
+     Streamlit Dashboard
+            |
+            v
+     dashboard.service
+            |
+            v
+ LangGraph Workflow / StateGraph
+            |
+            +-- LLM reasoning layer
+            +-- RAG / knowledge retrieval
+            +-- approved data tools
+            +-- governance checks
+            +-- signal evaluation
+            +-- signal registry
+            +-- reports and run traces
 ```
+
 ---
-## Mermaid View
 
-```mermaid
-flowchart LR
-    A["Analyst UI"] --> B["Service Layer"]
-    B --> C["Workflow State + Nodes"]
-    C --> D["Knowledge Retrieval"]
-    C --> E["Approved Data Tools"]
-    C --> F["Signal Evaluation"]
-    C --> G["Governance Controls"]
-    C --> H["Human Review"]
-    C --> I["Report + Run Trace"]
-    H --> J["Signal Registry"]
-    J --> K["Monitoring Proxies"]
-```
----
-## Why This Structure Matters
+## Full Stack View
 
-- The Streamlit app stays presentation-only.
-- Deterministic tools, not the LLM, own governed data access.
-- Workflow orchestration makes step order, pause points, and auditability explicit.
-- Signal promotion is controlled and reviewable.
-- Reports, traces, and monitoring exist as downstream artifacts rather than implicit logs.
----
-## Main Runtime Flow
-
-1. Intake an alert and classify likely case type.
-2. Retrieve relevant fraud knowledge and policies.
-3. Query approved case data tools.
-4. Summarise evidence and generate signal hypotheses.
-5. Evaluate signals and run governance checks.
-6. Pause for human decision where required.
-7. Persist report, audit trace, and signal registry changes.
-8. Monitor approved signals with deterministic proxy metrics.
-
-## Enterprise Interpretation
-
-This local implementation is intentionally small, but the boundaries map to an
-enterprise design:
-
-- `streamlit_app/` -> analyst portal
-- `dashboard.service` -> application service layer
-- `graph/` -> orchestration tier
-- `tools/` -> governed tool/API layer
-- `knowledge/` + `rag/` -> enterprise retrieval layer
-- `signal_registry/` -> governed feature or signal registry
-- `reports/` + `runs/` -> audit evidence and observability artifacts
----
-```mermaid
-flowchart TD
-    U["Business Analyst / Fraud Analyst"]
-    UI["Streamlit Dashboard<br/>streamlit_app/fraud_case_dashboard.py"]
-    SVC["Dashboard Service Layer<br/>dashboard/service.py"]
-
-    WF["Fraud Investigation Workflow<br/>graph/workflow.py"]
-    ST["Workflow State + Persistence<br/>graph/state.py + graph/persistence.py"]
-
-    AG["Agent Layer<br/>planner / classifier / summariser / signal_hypothesis / report_writer"]
-    RAG["Knowledge Retrieval Layer<br/>rag/* + retrieval_tools.py"]
-    TOOLS["Approved Data Tool Layer<br/>bb_dataset_tools.py + alert_tools.py"]
-    GOV["Governance Layer<br/>quality / lineage / privacy / explainability"]
-    EVAL["Signal Evaluation Layer<br/>signal_metrics.py + regression_tests.py"]
-    REG["Signal Registry<br/>signal_registry/*.yaml + registry.py"]
-    MON["Monitoring Layer<br/>signal_layer/monitoring.py"]
-
-    DATA["Sample Data Platform<br/>data/sample/*.csv"]
-    KNOW["Knowledge Base<br/>knowledge/fraud_typologies<br/>knowledge/policies<br/>knowledge/data_dictionary"]
-
-    ART["Artifacts<br/>reports/*.md<br/>runs/*.json"]
-    CLI["CLI<br/>airlab_fraud_agentic_ai/cli.py"]
-
-    U --> UI
-    U --> CLI
-
-    UI --> SVC
-    CLI --> SVC
-
-    SVC --> WF
-    WF --> ST
-    WF --> AG
-    WF --> RAG
-    WF --> TOOLS
-    WF --> EVAL
-    WF --> GOV
-    WF --> REG
-    WF --> ART
-
-    RAG --> KNOW
-    TOOLS --> DATA
-    EVAL --> DATA
-    GOV --> DATA
-
-    REG --> MON
-    MON --> DATA
-    SVC --> MON
-
-    WF -->|pause / resume| U
-
-```
----
 ```mermaid
 flowchart TD
     U["Users
@@ -141,95 +54,103 @@ flowchart TD
 
     UI["Presentation Layer
     Streamlit
-    Python
     Browser UI"]
 
+    CLI["CLI Layer
+    argparse
+    terminal workflow"]
+
     SVC["Application Service Layer
-    Python service functions
-    Pydantic-style view models
-    JSON serialization"]
+    dashboard service
+    view models
+    JSON responses"]
 
     ORCH["Workflow / Orchestration Layer
-    Python orchestration
     LangGraph Graph API
-    SQLite checkpointer
-    UUID / datetime audit trail"]
+    StateGraph
+    conditional routing
+    interrupt()/resume"]
 
-    AGENTS["Reasoning / Agent Layer
-    Local fake LLM path
-    Ollama-compatible client path
-    Prompt templates
-    Structured Python outputs"]
+    CKPT["Checkpoint / State Layer
+    SQLite
+    SqliteSaver
+    thread_id-based state"]
+
+    LLM["Reasoning / LLM Runtime Layer
+    fake provider
+    Ollama-compatible provider
+    prompts
+    structured reasoning outputs"]
 
     RAG["Knowledge / RAG Layer
-    Markdown knowledge base
-    Local retriever
-    Local vector store
-    No external managed vector DB"]
+    markdown knowledge base
+    local retriever
+    local vector store"]
 
     TOOLS["Deterministic Tool Layer
-    Pandas
-    CSV-backed dataset adapter
-    Governed fraud query tools"]
+    approved fraud data tools
+    alert tools
+    retrieval tools
+    registry tools"]
 
     GOV["Governance Layer
-    Rule-based checks
-    Data quality checks
-    Lineage checks
-    Privacy checks
-    Explainability checks"]
+    data quality
+    lineage
+    privacy
+    explainability"]
 
-    EVAL["Signal Evaluation Layer
-    Deterministic metrics
-    Regression checks
-    Monitoring proxies"]
+    EVAL["Evaluation Layer
+    signal metrics
+    regression checks
+    monitoring proxies"]
 
     REG["Signal Registry Layer
     YAML registry
-    PyYAML
-    Candidate / approved / rejected states"]
+    candidate / approved / rejected states"]
 
     DATA["Data Layer
-    CSV sample datasets
-    Pandas
-    Local file storage"]
+    sample CSV datasets
+    pandas-backed adapter
+    local file storage"]
 
-    ART["Artifacts / Audit Layer
-    Markdown reports
+    ART["Artifact Layer
+    markdown reports
     JSON run traces
-    Local filesystem persistence"]
+    persisted audit outputs"]
 
     MON["Monitoring Layer
-    Deterministic proxy metrics
-    Coverage / drift / decay logic"]
-
-    TEST["Quality / Validation Layer
-    pytest
-    deterministic unit tests
-    workflow tests"]
+    coverage proxy
+    fraud-lift proxy
+    drift proxy
+    decay score"]
 
     U --> UI
-    U --> SVC
+    U --> CLI
     UI --> SVC
+    CLI --> SVC
+
     SVC --> ORCH
-    ORCH --> AGENTS
+    ORCH --> CKPT
+    ORCH --> LLM
     ORCH --> RAG
     ORCH --> TOOLS
     ORCH --> GOV
     ORCH --> EVAL
     ORCH --> REG
     ORCH --> ART
-    TOOLS --> DATA
+
     RAG --> DATA
+    TOOLS --> DATA
+    GOV --> DATA
+    EVAL --> DATA
+
     REG --> MON
     MON --> DATA
-    TEST --> ORCH
-    TEST --> GOV
-    TEST --> EVAL
-    TEST --> MON
-
 ```
+
 ---
+
+## Workflow / Orchestration Deep Dive
 
 ```mermaid
 flowchart TD
@@ -256,73 +177,37 @@ flowchart TD
     Package: langgraph.types
     APIs: interrupt(), Command(resume=...)"]
 
-    N1["Node: intake_case
-    Local code: graph/nodes.py
-    Service/tool: alert_tools"]
-
-    N2["Node: classify_case_type
-    Local code: graph/nodes.py
-    Service/tool: classifier agent"]
-
-    N3["Node: plan_investigation
-    Local code: graph/nodes.py
-    Service/tool: planner agent"]
-
-    N4["Node: retrieve_knowledge
-    Local code: graph/nodes.py
-    Service/tool: retrieval_tools
-    Store: local vector store / markdown KB"]
-
-    N5["Node: query_case_data
-    Local code: graph/nodes.py
-    Service/tool: bb_dataset_tools
-    Data: CSV sample data via pandas"]
-
-    N6["Node: summarise_evidence
-    Local code: graph/nodes.py
-    Service/tool: evidence_summariser agent"]
-
-    N7["Node: generate_signal_hypotheses
-    Local code: graph/nodes.py
-    Service/tool: signal_hypothesis agent"]
-
-    N8["Node: evaluate_signals
-    Local code: graph/nodes.py
-    Service/tool: signal_eval_tools"]
-
-    N9["Node: governance_check
-    Local code: graph/nodes.py
-    Service/tool: governance_tools"]
-
-    N10["Node: register_candidates
-    Local code: workflow runtime
-    Service/tool: registry_tools
-    Store: YAML signal registry"]
-
-    N11["Node: prepare_human_review
-    Local code: workflow runtime
-    Output: review payload + draft report"]
-
-    N12["Node: human_review
-    Package: langgraph.types
-    Mechanism: interrupt/resume"]
-
-    N13["Node: promote_signal
-    Local code: workflow runtime
-    Service/tool: registry_tools
-    Store: YAML signal registry"]
-
-    N14["Node: generate_case_report
-    Local code: graph/nodes.py
-    Service/tool: case_report_writer"]
-
+    N1["intake_case
+    alert_tools"]
+    N2["classify_case_type
+    classifier"]
+    N3["plan_investigation
+    planner"]
+    N4["retrieve_knowledge
+    retrieval_tools + local vector store"]
+    N5["query_case_data
+    bb_dataset_tools + pandas/CSV"]
+    N6["summarise_evidence
+    evidence_summariser"]
+    N7["generate_signal_hypotheses
+    signal_hypothesis"]
+    N8["evaluate_signals
+    signal_eval_tools"]
+    N9["governance_check
+    governance_tools"]
+    N10["register_candidates
+    registry_tools + YAML registry"]
+    N11["prepare_human_review
+    review payload + draft report"]
+    N12["human_review
+    interrupt/resume"]
+    N13["promote_signal
+    registry_tools"]
+    N14["generate_case_report
+    case_report_writer"]
     ART["Artifact Export
-    Local module: graph/persistence.py
-    Files: reports/*.md, runs/*.json"]
-
-    AUDIT["Audit Trail
-    Local runtime: _audit_entry / audit_log
-    Data: timestamped step records"]
+    reports/*.md
+    runs/*.json"]
 
     ENTRY --> STATE
     ENTRY --> CHECKPOINT
@@ -344,29 +229,34 @@ flowchart TD
 
     N11 --> INTERRUPT
     INTERRUPT --> N12
-    N12 -->|approve| N14
-    N12 -->|reject| N14
-
+    N12 --> N14
     N13 --> N14
     N14 --> ART
-
-    STATE --> N1
-    STATE --> N2
-    STATE --> N3
-    STATE --> N4
-    STATE --> N5
-    STATE --> N6
-    STATE --> N7
-    STATE --> N8
-    STATE --> N9
-    STATE --> N10
-    STATE --> N11
-    STATE --> N12
-    STATE --> N13
-    STATE --> N14
-
-    AUDIT --> STATE
-    CHECKPOINT --> STATE
-
 ```
+
 ---
+
+## Why This Structure Matters
+
+- The Streamlit app stays presentation-only.
+- The service layer hides workflow complexity from the UI.
+- LangGraph owns orchestration, pause/resume, and checkpointed state.
+- The LLM runtime is a dependency of reasoning, not the orchestration engine itself.
+- Deterministic tools, not the LLM, own governed data access and control actions.
+- Reports, traces, and monitoring are explicit artifacts rather than implicit logs.
+
+---
+
+## Enterprise Interpretation
+
+This local implementation stays small, but the boundaries map cleanly to enterprise
+architecture:
+
+- `streamlit_app/` -> internal analyst portal
+- `dashboard.service` -> application service layer
+- `graph/` -> orchestration tier
+- `langgraph` + SQLite checkpointer -> stateful workflow runtime
+- `tools/` -> governed tool/API layer
+- `knowledge/` + `rag/` -> enterprise retrieval layer
+- `signal_registry/` -> governed Signal Layer / feature registry
+- `reports/` + `runs/` -> audit evidence and observability artifacts

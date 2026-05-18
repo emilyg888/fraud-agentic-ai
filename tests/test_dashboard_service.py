@@ -20,7 +20,7 @@ def test_dashboard_service_runs_case_and_answers_question() -> None:
     overview = get_case_overview("A-1001")
     assert overview["case_id"] == "A-1001"
 
-    run = run_investigation("A-1001", require_human_review=True)
+    run = run_investigation("A-1001", llm_backend="fake", require_human_review=True)
     answer = ask_case_question(run["run_id"], "Why was this case flagged?")
     report = get_report(run["run_id"])
     assert "evidence" in answer["limitations"].lower()
@@ -28,7 +28,7 @@ def test_dashboard_service_runs_case_and_answers_question() -> None:
 
 
 def test_dashboard_service_can_submit_decision_and_expose_artifacts() -> None:
-    run = run_investigation("A-1001", require_human_review=True)
+    run = run_investigation("A-1001", llm_backend="fake", require_human_review=True)
     signal_id = run["candidate_signals"][0]["signal_id"]
     submit_signal_decision(run["run_id"], signal_id, "approve", "reviewer_1", "approved for demo")
     report = get_report(run["run_id"])

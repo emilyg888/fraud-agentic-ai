@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 
 from airlab_fraud_agentic_ai.config import get_settings
 from airlab_fraud_agentic_ai.dashboard.service import (
@@ -20,7 +21,8 @@ def build_parser() -> argparse.ArgumentParser:
 
     investigate = subparsers.add_parser("investigate", help="Run an investigation for a case")
     investigate.add_argument("--case-id", required=True)
-    investigate.add_argument("--llm-provider", default=settings.llm_provider)
+    investigate.add_argument("--llm-backend", default=settings.llm_backend)
+    investigate.add_argument("--llm-provider", dest="llm_backend", help=argparse.SUPPRESS)
     investigate.add_argument("--auto-approve", action="store_true")
 
     review = subparsers.add_parser("review", help="Submit a human review decision")
@@ -42,11 +44,15 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     if args.command == "investigate":
-        result = run_investigation(
-            case_id=args.case_id,
-            llm_provider=args.llm_provider,
-            require_human_review=not args.auto_approve,
-        )
+        try:
+            result = run_investigation(
+                case_id=args.case_id,
+                llm_backend=args.llm_backend,
+                require_human_review=not args.auto_approve,
+            )
+        except RuntimeError as exc:
+            print(str(exc), file=sys.stderr)
+            return 1
         print(json.dumps(result, indent=2))
         return 0
 

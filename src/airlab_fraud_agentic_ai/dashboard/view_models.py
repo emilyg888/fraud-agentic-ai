@@ -20,6 +20,8 @@ def build_run_summary(state: dict) -> dict:
         "case_id": state["case_id"],
         "case_type": state.get("case_type"),
         "risk_level": state.get("risk_level"),
+        "llm_backend": state.get("llm_backend"),
+        "model_name": state.get("model_name"),
         "human_review_status": state.get("human_review_status"),
         "candidate_signals": state.get("signal_candidates", []),
         "governance_findings": state.get("governance_findings", {}),

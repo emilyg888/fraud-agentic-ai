@@ -93,6 +93,32 @@ class LineageRecord(BaseModel):
     certification_status: str
 
 
+class CaseEvidenceRecord(BaseModel):
+    evidence_id: str
+    case_id: str
+    alert_id: str
+    run_id: str | None = None
+    customer_id: str | None = None
+    evidence_type: str
+    source_tool: str | None = None
+    source_document: str | None = None
+    source_path: str | None = None
+    source_record_id: str | None = None
+    retrieval_timestamp: str
+    workflow_step: str
+    summary: str
+    raw_reference: dict[str, Any]
+    confidence_score: float | None = Field(default=None, ge=0.0, le=1.0)
+    quality_notes: list[str] = Field(default_factory=list)
+    policy_sensitivity: str
+    sensitivity_rationale: str | None = None
+    lineage_references: list[str] = Field(default_factory=list)
+    audit_event_ids: list[str] = Field(default_factory=list)
+    supporting_hypothesis_ids: list[str] = Field(default_factory=list)
+    supporting_claim_ids: list[str] = Field(default_factory=list)
+    metadata: dict[str, Any] = Field(default_factory=dict)
+
+
 class AuditEntry(BaseModel):
     step: str
     status: str

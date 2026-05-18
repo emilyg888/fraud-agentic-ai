@@ -28,6 +28,19 @@ Fraud investigation is not a single-model task. It requires orchestration across
 This project demonstrates that pattern while keeping deterministic tools in control of
 data access, governance, registry writes, and reporting.
 
+## Local LLM Use
+
+The CLI defaults to the local Ollama backend and `qwen3.6:35b-a3b` model. The model is
+used only for bounded analyst-facing text: evidence narrative synthesis, case report
+drafting, case copilot answers, and candidate-signal wording. Deterministic tools still
+own data access, metrics, governance decisions, audit writes, and signal promotion.
+
+Tests and offline demos can use the fake backend:
+
+```bash
+python -m airlab_fraud_agentic_ai.cli investigate --case-id A-1001 --llm-backend fake
+```
+
 ## Architecture Diagram
 
 ```mermaid
@@ -72,7 +85,7 @@ pytest
 If you want the Streamlit UI:
 
 ```bash
-streamlit run streamlit_app/fraud_case_dashboard.py --server.port 8888
+streamlit run streamlit_app/fraud_case_dashboard.py --server.port 8890
 ```
 
 ## CLI Demo
@@ -151,6 +164,7 @@ registry states.
 See:
 
 - `docs/signal_layer_design.md`
+- `docs/case_evidence_record_schema.md`
 
 ## Human-in-the-loop Approval
 
@@ -188,6 +202,20 @@ This local portfolio build maps to enterprise architecture patterns such as:
 See:
 
 - `docs/enterprise_mapping.md`
+
+## Documentation
+
+- Architecture: `design/architecture.md`
+- Pending review issues: `design/issues-pending-review.md`
+- Detailed architecture overview: `docs/architecture_overview.md`
+- Governance model: `docs/governance_model.md`
+- Demo script: `docs/demo_script.md`
+
+## Current Status
+
+The repo is ready for local demo and review with sample data. The fake backend keeps
+tests and demos offline-safe; the Ollama backend can use `qwen3.6:35b-a3b` for bounded
+analyst-facing text when the local model server is running.
 
 ## Limitations
 

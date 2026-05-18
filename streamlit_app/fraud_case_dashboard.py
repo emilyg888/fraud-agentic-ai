@@ -4,6 +4,7 @@ import json
 
 import streamlit as st
 
+from airlab_fraud_agentic_ai.config import get_settings
 from airlab_fraud_agentic_ai.dashboard.service import (
     ask_case_question,
     export_run_trace,
@@ -20,8 +21,8 @@ from airlab_fraud_agentic_ai.dashboard.service import (
 )
 
 
-st.set_page_config(page_title="Air-lab Fraud Agentic AI", layout="wide")
-st.title("Air-lab Fraud Agentic AI")
+st.set_page_config(page_title="Fraud Case Investigation Workflow", layout="wide")
+st.title("Fraud Case Investigation Workflow")
 st.caption("Business analyst workspace over the workflow service layer.")
 
 if "run_id" not in st.session_state:
@@ -36,9 +37,16 @@ if st.session_state.pending_run_id_input is not None:
     st.session_state.pending_run_id_input = None
 
 queue = list_case_queue()
+settings = get_settings()
 case_options = [item["alert_id"] for item in queue]
 selected_case = st.sidebar.selectbox("Case Queue", options=case_options)
 require_human_review = st.sidebar.toggle("Require human review", value=True)
+llm_backend = st.sidebar.selectbox(
+    "LLM Backend",
+    options=["ollama", "fake"],
+    index=0 if settings.llm_backend == "ollama" else 1,
+)
+st.sidebar.caption(f"Model: {settings.model_name}")
 
 st.sidebar.divider()
 st.sidebar.subheader("Run Loader")
@@ -89,10 +97,18 @@ with tabs[0]:
 
 with tabs[1]:
     if st.button("Run Investigation", use_container_width=True):
-        summary = run_investigation(selected_case, require_human_review=require_human_review)
-        st.session_state.run_id = summary["run_id"]
-        st.session_state.pending_run_id_input = summary["run_id"]
-        current_state = get_run_state(st.session_state.run_id)
+        try:
+            summary = run_investigation(
+                selected_case,
+                llm_backend=llm_backend,
+                require_human_review=require_human_review,
+            )
+        except RuntimeError as exc:
+            st.error(str(exc))
+        else:
+            st.session_state.run_id = summary["run_id"]
+            st.session_state.pending_run_id_input = summary["run_id"]
+            current_state = get_run_state(st.session_state.run_id)
     if current_state:
         cols = st.columns(3)
         cols[0].metric("Run ID", current_state["run_id"])

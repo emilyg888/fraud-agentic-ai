@@ -29,7 +29,7 @@ Highlight:
 ## 3. Start The Dashboard
 
 ```bash
-streamlit run streamlit_app/fraud_case_dashboard.py --server.port 8888
+streamlit run streamlit_app/fraud_case_dashboard.py --server.port 8890
 ```
 
 ## 4. Investigate A High-Risk Case

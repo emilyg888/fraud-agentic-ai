@@ -192,8 +192,21 @@ class FraudInvestigationWorkflow:
             "lineage": state.get("lineage"),
         }
         return {
-            "evidence_summary": nodes.summarise(state["alert"], retrieved, case_data),
-            "audit_log": _append_audit(state, _audit_entry("summarise_evidence", "completed")),
+            "evidence_summary": nodes.summarise(
+                state["alert"],
+                retrieved,
+                case_data,
+                llm_backend=state.get("llm_backend", "fake"),
+            ),
+            "audit_log": _append_audit(
+                state,
+                _audit_entry(
+                    "summarise_evidence",
+                    "completed",
+                    llm_backend=state.get("llm_backend", "fake"),
+                    model_name=state.get("model_name"),
+                ),
+            ),
         }
 
     def _generate_signal_hypotheses(self, state: FraudInvestigationState) -> dict:
@@ -211,12 +224,19 @@ class FraudInvestigationWorkflow:
             state["alert"],
             {"case_type": state["case_type"], "risk_level": state["risk_level"]},
             case_data,
+            llm_backend=state.get("llm_backend", "fake"),
         )
         return {
             "signal_candidates": candidates,
             "audit_log": _append_audit(
                 state,
-                _audit_entry("generate_signal_hypotheses", "completed", candidate_count=len(candidates)),
+                _audit_entry(
+                    "generate_signal_hypotheses",
+                    "completed",
+                    candidate_count=len(candidates),
+                    llm_backend=state.get("llm_backend", "fake"),
+                    model_name=state.get("model_name"),
+                ),
             ),
         }
 
@@ -304,7 +324,13 @@ class FraudInvestigationWorkflow:
             "audit_log": _append_audit(
                 state,
                 _audit_entry("human_review", "paused"),
-                _audit_entry("generate_case_report", "completed", mode="draft"),
+                _audit_entry(
+                    "generate_case_report",
+                    "completed",
+                    mode="draft",
+                    llm_backend=state.get("llm_backend", "fake"),
+                    model_name=state.get("model_name"),
+                ),
             ),
         }
 
@@ -388,12 +414,27 @@ class FraudInvestigationWorkflow:
         report = nodes.write_report(state)
         return {
             "final_case_report": report,
-            "audit_log": _append_audit(state, _audit_entry("generate_case_report", "completed")),
+            "audit_log": _append_audit(
+                state,
+                _audit_entry(
+                    "generate_case_report",
+                    "completed",
+                    llm_backend=state.get("llm_backend", "fake"),
+                    model_name=state.get("model_name"),
+                ),
+            ),
         }
 
-    def run_case(self, case_id: str, llm_provider: str = "fake", require_human_review: bool = True) -> dict:
+    def run_case(
+        self,
+        case_id: str,
+        llm_backend: str = "fake",
+        require_human_review: bool = True,
+        llm_provider: str | None = None,
+    ) -> dict:
         run_id = uuid4().hex[:12]
         settings = get_settings()
+        selected_backend = llm_provider or llm_backend
         initial_state: FraudInvestigationState = {
             "run_id": run_id,
             "case_id": case_id,
@@ -401,7 +442,7 @@ class FraudInvestigationWorkflow:
             "audit_log": [],
             "human_review_status": "not_required",
             "human_review_comments": None,
-            "llm_provider": llm_provider,
+            "llm_backend": selected_backend,
             "model_name": settings.model_name,
             "require_human_review": require_human_review,
         }

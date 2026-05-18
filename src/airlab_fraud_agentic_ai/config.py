@@ -15,7 +15,7 @@ class Settings:
     runs_dir: Path
     checkpoint_db_path: Path
     registry_dir: Path
-    llm_provider: str
+    llm_backend: str
     model_name: str
     ollama_host: str
 
@@ -32,7 +32,7 @@ def get_settings() -> Settings:
         runs_dir=runs_dir,
         checkpoint_db_path=Path(os.getenv("AIRLAB_CHECKPOINT_DB_PATH", runs_dir / "langgraph_checkpoints.sqlite")),
         registry_dir=Path(os.getenv("AIRLAB_REGISTRY_DIR", root_dir / "signal_registry")),
-        llm_provider=os.getenv("LOCAL_LLM_PROVIDER", "ollama"),
+        llm_backend=os.getenv("LOCAL_LLM_BACKEND", os.getenv("LOCAL_LLM_PROVIDER", "ollama")),
         model_name=os.getenv("MODEL_NAME", "qwen3.6:35b-a3b"),
         ollama_host=os.getenv("OLLAMA_HOST", "http://127.0.0.1:11434"),
     )

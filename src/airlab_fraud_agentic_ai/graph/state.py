@@ -7,7 +7,7 @@ class FraudInvestigationState(TypedDict, total=False):
     run_id: str
     case_id: str
     analyst_request: str
-    llm_provider: str
+    llm_backend: str
     model_name: str
     require_human_review: bool
     alert: dict[str, Any]

@@ -2,14 +2,18 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
-from urllib import request
+from urllib import error, request
 
 from airlab_fraud_agentic_ai.config import get_settings
 
 
 @dataclass
 class FakeLLM:
-    provider: str = "fake"
+    backend: str = "fake"
+
+    @property
+    def provider(self) -> str:
+        return self.backend
 
     def invoke(self, prompt: str) -> str:
         return f"[fake-llm] {prompt}"
@@ -19,7 +23,11 @@ class FakeLLM:
 class OllamaLLM:
     model: str
     host: str
-    provider: str = "ollama"
+    backend: str = "ollama"
+
+    @property
+    def provider(self) -> str:
+        return self.backend
 
     def invoke(self, prompt: str) -> str:
         payload = json.dumps(
@@ -35,14 +43,20 @@ class OllamaLLM:
             headers={"Content-Type": "application/json"},
             method="POST",
         )
-        with request.urlopen(http_request, timeout=120) as response:
-            body = json.loads(response.read().decode("utf-8"))
+        try:
+            with request.urlopen(http_request, timeout=120) as response:
+                body = json.loads(response.read().decode("utf-8"))
+        except error.URLError as exc:
+            raise RuntimeError(
+                f"Local Ollama model call failed for {self.model} at {self.host}. "
+                "Start Ollama and confirm the model is available, or rerun with --llm-backend fake."
+            ) from exc
         return body["response"]
 
 
-def get_llm(provider: str | None = None) -> FakeLLM | OllamaLLM:
+def get_llm(provider: str | None = None, backend: str | None = None) -> FakeLLM | OllamaLLM:
     settings = get_settings()
-    selected_provider = provider or settings.llm_provider
-    if selected_provider == "ollama":
+    selected_backend = backend or provider or settings.llm_backend
+    if selected_backend == "ollama":
         return OllamaLLM(model=settings.model_name, host=settings.ollama_host)
-    return FakeLLM(provider=selected_provider)
+    return FakeLLM(backend=selected_backend)
