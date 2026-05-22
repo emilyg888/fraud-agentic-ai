@@ -133,7 +133,7 @@ The dashboard is a thin analyst workspace over the service layer. Use it to:
 
 ## Project Structure
 
-- `docs/`: architecture, governance, workflow, signal-layer, and demo docs
+- `design/`: architecture, governance, workflow, signal-layer, and demo docs
 - `data/`: sample BB-style datasets and dataset mapping
 - `knowledge/`: fraud typologies, policies, and data dictionary content
 - `signal_registry/`: candidate, approved, and rejected signal states
@@ -152,8 +152,8 @@ directly to enterprise LangGraph patterns.
 
 See:
 
-- `docs/langgraph_workflow.md`
-- `docs/architecture_overview.md`
+- `design/langgraph_workflow.md`
+- `design/architecture.md`
 
 ## Signal Layer Design
 
@@ -163,8 +163,8 @@ registry states.
 
 See:
 
-- `docs/signal_layer_design.md`
-- `docs/case_evidence_record_schema.md`
+- `design/signal_layer_design.md`
+- `design/case_evidence_record_schema.md`
 
 ## Human-in-the-loop Approval
 
@@ -201,15 +201,14 @@ This local portfolio build maps to enterprise architecture patterns such as:
 
 See:
 
-- `docs/enterprise_mapping.md`
+- `design/enterprise_mapping.md`
 
 ## Documentation
 
 - Architecture: `design/architecture.md`
 - Pending review issues: `design/issues-pending-review.md`
-- Detailed architecture overview: `docs/architecture_overview.md`
-- Governance model: `docs/governance_model.md`
-- Demo script: `docs/demo_script.md`
+- Governance model: `design/governance_model.md`
+- Demo script: `design/demo_script.md`
 
 ## Current Status
 

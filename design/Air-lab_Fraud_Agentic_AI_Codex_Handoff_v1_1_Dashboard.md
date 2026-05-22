@@ -199,8 +199,8 @@ airlab-fraud-agentic-ai/
   .env.example
   .gitignore
 
-  docs/
-    architecture_overview.md
+  design/
+    architecture.md
     langgraph_workflow.md
     governance_model.md
     signal_layer_design.md
@@ -544,7 +544,7 @@ pyproject.toml
 requirements.txt
 .env.example
 .gitignore
-docs/codex_handoff.md
+design/codex_handoff.md
 data/README.md
 reports/.gitkeep
 runs/.gitkeep
@@ -597,7 +597,7 @@ tests/test_project_structure.py
 Read AGENTS.md requirements from this handoff. Implement Phase 0 only.
 
 Goal: bootstrap the Air-lab Fraud Agentic AI repository.
-Context: use the Phase 0 section of docs/codex_handoff.md.
+Context: use the Phase 0 section of design/codex_handoff.md.
 Constraints: do not implement RAG, LangGraph, tools, or agents yet. Create only repo skeleton, README, AGENTS.md, pyproject, CLI placeholder, and tests.
 Done when: pytest passes and `python -m airlab_fraud_agentic_ai.cli --help` works.
 ```
@@ -764,7 +764,7 @@ Expected output:
 Implement Phase 1 only.
 
 Goal: create data contracts, sample BB_Datasets files, adapter, and approved deterministic data tools.
-Context: use Phase 1 in docs/codex_handoff.md. The LLM must never access raw datasets directly; later agents will call these tools.
+Context: use Phase 1 in design/codex_handoff.md. The LLM must never access raw datasets directly; later agents will call these tools.
 Constraints: no LangChain, no LangGraph, no LLM calls yet. Use Pydantic models and JSON-serialisable outputs. Include three sample cases A-1001, A-1002, A-1003.
 Done when: `pytest` passes and `python -m airlab_fraud_agentic_ai.cli inspect-data --case-id A-1001` prints alert, customer, transaction, behavioural, feature, lineage, and data quality summaries.
 ```
@@ -879,7 +879,7 @@ python -m airlab_fraud_agentic_ai.cli search-knowledge "device change new payee 
 Implement Phase 2 only.
 
 Goal: add fraud knowledge documents and a local RAG retriever.
-Context: Phase 2 in docs/codex_handoff.md. Phase 1 data tools already exist.
+Context: Phase 2 in design/codex_handoff.md. Phase 1 data tools already exist.
 Constraints: tests must not require external LLM or embedding API keys. Use a deterministic fallback retriever or fake embeddings if needed. Do not implement LangGraph workflow yet.
 Done when: `pytest` passes and `python -m airlab_fraud_agentic_ai.cli search-knowledge "device change new payee high value transfer"` returns relevant typology/policy snippets with source paths.
 ```
@@ -909,7 +909,7 @@ src/airlab_fraud_agentic_ai/graph/routing.py
 src/airlab_fraud_agentic_ai/graph/workflow.py
 src/airlab_fraud_agentic_ai/graph/persistence.py
 tests/test_graph_workflow.py
-docs/langgraph_workflow.md
+design/langgraph_workflow.md
 ```
 
 ### Required state object
@@ -1323,7 +1323,7 @@ src/airlab_fraud_agentic_ai/graph/routing.py
 src/airlab_fraud_agentic_ai/graph/workflow.py
 src/airlab_fraud_agentic_ai/cli.py
 tests/test_human_review.py
-docs/langgraph_workflow.md
+design/langgraph_workflow.md
 ```
 
 ### Required behaviour
@@ -1956,7 +1956,7 @@ src/airlab_fraud_agentic_ai/cli.py
 streamlit_app/fraud_case_dashboard.py
 tests/test_signal_monitoring.py
 tests/test_dashboard_service.py
-docs/signal_layer_design.md
+design/signal_layer_design.md
 ```
 
 ### Monitoring metrics
@@ -2044,12 +2044,12 @@ Make the repository portfolio-ready for LinkedIn, GitHub, EY-style interviews, a
 
 ```text
 README.md
-docs/architecture_overview.md
-docs/governance_model.md
-docs/enterprise_mapping.md
-docs/signal_layer_design.md
-docs/langgraph_workflow.md
-docs/demo_script.md
+design/architecture.md
+design/governance_model.md
+design/enterprise_mapping.md
+design/signal_layer_design.md
+design/langgraph_workflow.md
+design/demo_script.md
 ```
 
 ### README final structure
@@ -2093,7 +2093,7 @@ docs/demo_script.md
 
 ### Demo script
 
-Create `docs/demo_script.md` with:
+Create `design/demo_script.md` with:
 
 1. Business problem explanation
 2. Architecture walkthrough

@@ -26,7 +26,7 @@ def get_settings() -> Settings:
     return Settings(
         root_dir=root_dir,
         data_dir=Path(os.getenv("AIRLAB_DATA_DIR", root_dir / "data")),
-        docs_dir=Path(os.getenv("AIRLAB_DOCS_DIR", root_dir / "docs")),
+        docs_dir=Path(os.getenv("AIRLAB_DOCS_DIR", root_dir / "design")),
         knowledge_dir=Path(os.getenv("AIRLAB_KNOWLEDGE_DIR", root_dir / "knowledge")),
         reports_dir=Path(os.getenv("AIRLAB_REPORTS_DIR", root_dir / "reports")),
         runs_dir=runs_dir,

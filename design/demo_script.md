@@ -17,8 +17,8 @@ Explain the setup:
 Open:
 
 - `README.md`
-- `docs/architecture_overview.md`
-- `docs/langgraph_workflow.md`
+- `design/architecture.md`
+- `design/langgraph_workflow.md`
 
 Highlight:
 
@@ -96,7 +96,7 @@ Be explicit:
 
 ## 10. Close With Enterprise Mapping
 
-Open `docs/enterprise_mapping.md` and summarize:
+Open `design/enterprise_mapping.md` and summarize:
 
 - local components are placeholders for enterprise boundaries
 - the value of the project is in the design decisions and control separation

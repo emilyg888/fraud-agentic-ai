@@ -356,7 +356,7 @@ knowledge/
     transaction_features.md
     behavioural_features.md
     signal_definitions.md
-  model_docs/
+  model_design/
     fraud_model_card.md
     feature_importance_notes.md
 ```

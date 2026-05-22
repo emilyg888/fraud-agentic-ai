@@ -17,6 +17,36 @@ Both entry points call `airlab_fraud_agentic_ai.dashboard.service`, which then c
 
 The LLM backend is configurable. `ollama` with `qwen3.6:35b-a3b` is used for bounded analyst-facing text only. `fake` is used for tests and offline demos.
 
+The key architectural rule is strict separation between:
+
+- presentation
+- service orchestration
+- workflow state/control
+- bounded reasoning
+- deterministic controls
+- governed artifacts
+
+```text
+Business Analyst / Reviewer
+            |
+            v
+     Streamlit Dashboard
+            |
+            v
+     dashboard.service
+            |
+            v
+ LangGraph Workflow / StateGraph
+            |
+            +-- LLM reasoning layer
+            +-- RAG / knowledge retrieval
+            +-- approved data tools
+            +-- governance checks
+            +-- signal evaluation
+            +-- signal registry
+            +-- reports and run traces
+```
+
 ## 3. Component Map
 
 | Component | Path | Responsibility | Key dependencies |
@@ -38,6 +68,109 @@ The LLM backend is configurable. `ollama` with `qwen3.6:35b-a3b` is used for bou
 | Artifacts | `reports/`, `runs/` | Local generated reports, JSON traces, checkpoints | Ignored generated files plus `.gitkeep` |
 | Tests | `tests/` | Unit, workflow, dashboard service, LLM wiring, monitoring, and governance tests | pytest |
 
+## 3.1 Full Stack View
+
+```mermaid
+flowchart TD
+    U["Users
+    Business Analyst
+    Fraud Reviewer"]
+
+    UI["Presentation Layer
+    Streamlit
+    Browser UI"]
+
+    CLI["CLI Layer
+    argparse
+    terminal workflow"]
+
+    SVC["Application Service Layer
+    dashboard service
+    view models
+    JSON responses"]
+
+    ORCH["Workflow / Orchestration Layer
+    LangGraph Graph API
+    StateGraph
+    conditional routing
+    interrupt()/resume"]
+
+    CKPT["Checkpoint / State Layer
+    SQLite
+    SqliteSaver
+    thread_id-based state"]
+
+    LLM["Reasoning / LLM Runtime Layer
+    fake backend
+    Ollama backend
+    qwen3.6:35b-a3b"]
+
+    RAG["Knowledge / RAG Layer
+    markdown knowledge base
+    local retriever
+    local vector store"]
+
+    TOOLS["Deterministic Tool Layer
+    approved fraud data tools
+    alert tools
+    retrieval tools
+    registry tools"]
+
+    GOV["Governance Layer
+    data quality
+    lineage
+    privacy
+    explainability"]
+
+    EVAL["Evaluation Layer
+    signal metrics
+    regression checks
+    monitoring proxies"]
+
+    REG["Signal Registry Layer
+    YAML registry
+    candidate / approved / rejected states"]
+
+    DATA["Data Layer
+    sample CSV datasets
+    pandas-backed adapter
+    local file storage"]
+
+    ART["Artifact Layer
+    markdown reports
+    JSON run traces
+    persisted audit outputs"]
+
+    MON["Monitoring Layer
+    coverage proxy
+    fraud-lift proxy
+    drift proxy
+    decay score"]
+
+    U --> UI
+    U --> CLI
+    UI --> SVC
+    CLI --> SVC
+
+    SVC --> ORCH
+    ORCH --> CKPT
+    ORCH --> LLM
+    ORCH --> RAG
+    ORCH --> TOOLS
+    ORCH --> GOV
+    ORCH --> EVAL
+    ORCH --> REG
+    ORCH --> ART
+
+    RAG --> DATA
+    TOOLS --> DATA
+    GOV --> DATA
+    EVAL --> DATA
+
+    REG --> MON
+    MON --> DATA
+```
+
 ## 4. Runtime Flow
 
 ```text
@@ -57,6 +190,92 @@ Alert ID or analyst request
   -> bounded report draft with selected LLM backend
   -> persisted report, run trace, audit log
 ```
+
+## 4.1 Workflow / Orchestration Deep Dive
+
+```mermaid
+flowchart TD
+    ENTRY["Workflow Entry
+    Package: langgraph.graph
+    Runtime: StateGraph invoke()"]
+
+    STATE["Workflow State
+    Local type: FraudInvestigationState
+    Package: typing.TypedDict"]
+
+    CHECKPOINT["Checkpoint Persistence
+    Package: langgraph-checkpoint-sqlite
+    Class: SqliteSaver
+    DB: SQLite
+    Key: thread_id"]
+
+    ROUTER["Routing / Control
+    Package: langgraph.graph
+    Features: add_edge, add_conditional_edges
+    Local rule: should_pause_for_human_review"]
+
+    INTERRUPT["Human Review Boundary
+    Package: langgraph.types
+    APIs: interrupt(), Command(resume=...)"]
+
+    N1["intake_case
+    alert_tools"]
+    N2["classify_case_type
+    classifier"]
+    N3["plan_investigation
+    planner"]
+    N4["retrieve_knowledge
+    retrieval_tools + local vector store"]
+    N5["query_case_data
+    bb_dataset_tools + pandas/CSV"]
+    N6["summarise_evidence
+    evidence_summariser"]
+    N7["generate_signal_hypotheses
+    signal_hypothesis"]
+    N8["evaluate_signals
+    signal_eval_tools"]
+    N9["governance_check
+    governance_tools"]
+    N10["register_candidates
+    registry_tools + YAML registry"]
+    N11["prepare_human_review
+    review payload + draft report"]
+    N12["human_review
+    interrupt/resume"]
+    N13["promote_signal
+    registry_tools"]
+    N14["generate_case_report
+    case_report_writer"]
+    ART["Artifact Export
+    reports/*.md
+    runs/*.json"]
+
+    ENTRY --> STATE
+    ENTRY --> CHECKPOINT
+    ENTRY --> N1
+    N1 --> N2
+    N2 --> N3
+    N3 --> N4
+    N4 --> N5
+    N5 --> N6
+    N6 --> N7
+    N7 --> N8
+    N8 --> N9
+    N9 --> N10
+
+    N10 --> ROUTER
+    ROUTER -->|human review required| N11
+    ROUTER -->|auto-approve path| N13
+    ROUTER -->|no candidates| N14
+
+    N11 --> INTERRUPT
+    INTERRUPT --> N12
+    N12 --> N14
+    N13 --> N14
+    N14 --> ART
+```
+
+This structure matters because the Streamlit app stays presentation-only, the service layer hides workflow complexity from the UI, LangGraph owns orchestration and checkpointed state, and deterministic tools own governed data access and control actions. The LLM runtime is a dependency of bounded analyst-facing text, not the orchestration or decision engine.
 
 ## 5. Data Flow
 
@@ -79,7 +298,7 @@ Environment variables:
 |---|---|---|
 | `AIRLAB_ROOT_DIR` | repository root | Override project root |
 | `AIRLAB_DATA_DIR` | `data/` | Sample data location |
-| `AIRLAB_DOCS_DIR` | `docs/` | Documentation location |
+| `AIRLAB_DOCS_DIR` | `design/` | Documentation location |
 | `AIRLAB_KNOWLEDGE_DIR` | `knowledge/` | RAG knowledge location |
 | `AIRLAB_REPORTS_DIR` | `reports/` | Generated report output |
 | `AIRLAB_RUNS_DIR` | `runs/` | Generated trace/checkpoint output |
@@ -143,6 +362,19 @@ Local Qwen/Ollama mode requires Ollama to be running and `qwen3.6:35b-a3b` to be
 - Analyst decisions and workflow steps are captured in the audit trace.
 - Reports and run traces are generated local artifacts, not production evidence.
 - Monitoring metrics are deterministic sample-data proxies, not production fraud validation.
+
+Enterprise boundary mapping:
+
+| Local component | Enterprise interpretation |
+|---|---|
+| `streamlit_app/` | Internal analyst portal |
+| `dashboard.service` | Application service layer |
+| `graph/` | Stateful orchestration tier |
+| LangGraph + SQLite checkpointer | Workflow runtime and checkpoint store |
+| `tools/` | Governed tool/API layer |
+| `knowledge/` + `rag/` | Enterprise retrieval layer |
+| `signal_registry/` | Governed Signal Layer or feature registry |
+| `reports/` + `runs/` | Audit evidence and observability artifacts |
 
 ## 10. Known Gaps
 

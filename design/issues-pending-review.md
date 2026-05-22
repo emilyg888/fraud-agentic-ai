@@ -4,7 +4,7 @@
 
 | ID | Severity | Area | Issue | Recommended action | Status |
 |---|---|---|---|---|---|
-| ISSUE-001 | Low | Docs | `README.md` previously linked to missing `docs/reference_architecture_pattern.md`. | Broken link removed during housekeeping; confirm no external handoff depends on the missing file. | Pending review |
+| ISSUE-001 | Low | Docs | `README.md` previously linked to missing `design/reference_architecture_pattern.md`. | Broken link removed during housekeeping; confirm no external handoff depends on the missing file. | Pending review |
 | ISSUE-002 | Low | Housekeeping | Local generated outputs exist in ignored paths such as `reports/`, `runs/`, `benchmark_plots/`, caches, and `.DS_Store` files. | Keep ignored; optionally clean locally before demos if they distract from review. | Pending review |
 | ISSUE-003 | Low | Runtime | Local Ollama mode depends on an external local server and model availability. | Use `--llm-backend fake` for offline SIT; start Ollama for Qwen demo runs. | Pending review |
 | ISSUE-004 | Low | UI | Streamlit emits a deprecation warning for `use_container_width`. | Replace with `width='stretch'` in a focused UI maintenance pass. | Pending review |
@@ -13,7 +13,7 @@
 
 | Command | Result | Notes |
 |---|---|---|
-| `uv run pytest` | Passed | Full deterministic test suite passed on 2026-05-18. |
+| `uv run pytest` | Passed | Full deterministic test suite passed on 2026-05-22. |
 | `.venv/bin/python -m airlab_fraud_agentic_ai.cli investigate --case-id A-1001 --llm-backend fake` | Passed | Practical workflow smoke test passed with fake backend. |
 | `.venv/bin/python -m airlab_fraud_agentic_ai.cli investigate --case-id A-1001` | Not run as pass criterion | Requires local Ollama and `qwen3.6:35b-a3b`; use for local model demo, not offline SIT. |
 
@@ -29,7 +29,7 @@
 
 - Severity: Low
 - Area: Docs
-- Evidence: `README.md` referenced `docs/reference_architecture_pattern.md`, but that file is not present.
+- Evidence: `README.md` referenced `design/reference_architecture_pattern.md`, but that file is not present.
 - Impact: Reviewers could hit a broken documentation link.
 - Recommended action: Keep the removed link out unless the missing document is recreated.
 - Status: Pending review

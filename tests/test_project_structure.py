@@ -10,7 +10,7 @@ def test_required_top_level_paths_exist() -> None:
         "README.md",
         "pyproject.toml",
         "requirements.txt",
-        "docs",
+        "design",
         "data",
         "knowledge",
         "signal_registry",
